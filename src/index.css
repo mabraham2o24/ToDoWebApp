@@ -1,0 +1,1160 @@
+/* =========================================================
+   GLOBAL RESET + BASE
+========================================================= */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Inter", sans-serif;
+}
+
+body {
+  background: #f3f4f6;
+  min-height: 100vh;
+}
+
+/* =========================================================
+   LOGIN PAGE
+========================================================= */
+
+.login-page {
+  min-height: 100vh;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.login-card {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(14px);
+  padding: 40px 30px;
+  border-radius: 16px;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.2);
+  width: 480px;
+  text-align: center;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.login-title {
+  font-size: 30px;
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+
+.login-subtext {
+  font-size: 15px;
+  margin-bottom: 25px;
+  color: #4b5563;
+}
+
+.login-google-btn {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.login-hint {
+  font-size: 12px;
+  margin-bottom: 12px;
+  color: #6b7280;
+}
+
+.login-skip {
+  background: none;
+  border: none;
+  color: #2563eb;
+  cursor: pointer;
+  font-size: 14px;
+  text-decoration: underline;
+}
+
+.login-skip:hover {
+  color: #1d4ed8;
+}
+
+/* =========================================================
+   TOP BAR (Dashboard Header)
+========================================================= */
+
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  padding: 16px 24px;
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+}
+
+/* three sections so center title stays centered */
+.topbar-section {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.topbar-left {
+  justify-content: flex-start;
+}
+
+.topbar-center {
+  justify-content: center;
+}
+
+.topbar-right {
+  justify-content: flex-end;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* username on the left */
+.topbar-username {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+/* (old class kept in case it's used elsewhere) */
+.topbar-user {
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+/* center app title */
+.app-title {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.theme-toggle-btn {
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.theme-toggle-btn:hover {
+  background: #e5e7eb;
+}
+
+/* logout button */
+.logout-btn {
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 600;
+  background-color: #ef4444;
+  color: #ffffff;
+  transition: background-color 0.15s ease, transform 0.05s ease;
+}
+
+.logout-btn:hover {
+  background-color: #b91c1c;
+  transform: translateY(-1px);
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;      /* centered layout */
+  padding: 32px 16px;
+  gap: 20px;
+}
+
+/* =========================================================
+   MY TASKS — TOP CARD
+========================================================= */
+
+.todo-card {
+  width: 100%;
+  max-width: 650px;
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 24px 22px 28px;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+}
+
+.todo-title {
+  text-align: center;
+  font-size: 26px;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+/* input + add button */
+.todo-input-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.todo-input {
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  font-size: 0.95rem;
+}
+
+.todo-input:focus {
+  border-color: #2563eb;
+  outline: none;
+  box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.4);
+}
+
+.todo-add-btn {
+  padding: 10px 20px;
+  background: #111827;
+  color: white;
+  border: none;
+  border-radius: 999px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.todo-add-btn:hover {
+  background: #0a0f1c;
+}
+
+/* priority + date for NEW task */
+.todo-meta-input-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.todo-priority-select,
+.todo-date-input {
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  background: #f9fafb;
+  font-size: 0.9rem;
+}
+
+/* filter row */
+.todo-filter-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* right side controls in filter row (sort + count) */
+.todo-right-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* prettier sort dropdown – pill style like priority/date */
+.todo-sort-select {
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  background: #f9fafb;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+
+  /* use native arrow to avoid weird custom triangle */
+  appearance: auto;
+  -webkit-appearance: auto;
+  -moz-appearance: auto;
+}
+
+.todo-sort-select:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.3);
+}
+
+.todo-filters {
+  display: flex;
+  gap: 10px;
+}
+
+.todo-filter {
+  background: none;
+  border: none;
+  font-size: 0.9rem;
+  color: #6b7280;
+  cursor: pointer;
+}
+
+.todo-filter.active {
+  color: #111827;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.todo-count {
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+/* =========================================================
+   PROGRESS BAR
+========================================================= */
+
+.progress-section {
+  margin-top: 14px;
+}
+
+.progress-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+  color: #6b7280;
+  margin-bottom: 6px;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  border-radius: 999px;
+  background: #e5e7eb;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  width: 0;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #22c55e, #3b82f6);
+  transition: width 0.25s ease-out;
+}
+
+/* =========================================================
+   INLINE CHRONOLOGICAL LIST
+========================================================= */
+
+.todo-inline-list {
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 1px solid #e5e7eb;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.todo-inline-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 0;
+  font-size: 0.9rem;
+}
+
+/* Checkbox for inline list */
+.inline-checkbox {
+  position: relative;
+}
+
+.inline-checkbox input {
+  opacity: 0;
+  position: absolute;
+  cursor: pointer;
+}
+
+.inline-checkmark {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  border: 2px solid #000;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.inline-checkbox input:checked + .inline-checkmark::after {
+  content: "✓";
+  font-size: 12px;
+  font-weight: 700;
+  color: #000;
+}
+
+.inline-task-text.completed {
+  text-decoration: line-through;
+  opacity: 0.9;
+}
+
+/* Big due date label */
+.inline-due {
+  margin-left: auto;
+  font-weight: 700;
+  color: #111827;
+  font-size: 1rem;
+  padding: 4px 10px;
+  background: #eef0f3;
+  border-radius: 6px;
+}
+
+/* Priority tag shown only when sorting by priority */
+.inline-priority-tag {
+  margin-left: 8px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* Colors */
+.inline-low {
+  background: #ecfdf3;
+  color: #15803d;
+}
+.inline-medium {
+  background: #fffce1;
+  color: #c5cf04;
+}
+.inline-high {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+/* Dark mode versions of inline tags */
+body.dark-mode .inline-low {
+  background: #052e16;
+  color: #86efac;
+}
+body.dark-mode .inline-medium {
+  background: #422006;
+  color: #fde047;
+}
+body.dark-mode .inline-high {
+  background: #450a0a;
+  color: #fca5a5;
+}
+
+/* =========================================================
+   THREE COLUMNS (LOW, MED, HIGH)
+========================================================= */
+
+.board-wrapper {
+  max-width: 1100px;
+  width: 100%;
+}
+
+.priority-columns {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+}
+
+.priority-column {
+  background: white;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 5px 20px rgba(15, 23, 42, 0.08);
+}
+
+.priority-title {
+  margin-bottom: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.priority-title.low {
+  color: #15803d;
+}
+.priority-title.medium {
+  color: #c5cf04;
+}
+.priority-title.high {
+  color: #b91c1c;
+}
+
+.priority-task-card {
+  background: #f9fafb;
+  padding: 12px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  border: 1px solid #e5e7eb;
+}
+
+/* =========================================================
+   COLUMN TASK ROWS
+========================================================= */
+
+.todo-item-column {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 12px;
+  align-items: center;
+}
+
+/* Checkbox */
+.todo-checkbox {
+  position: relative;
+}
+
+.todo-checkbox input {
+  opacity: 0;
+  position: absolute;
+}
+
+.checkmark {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  border: 2px solid #000;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.todo-checkbox input:checked + .checkmark::after {
+  content: "✓";
+  font-size: 14px;
+  font-weight: 700;
+}
+
+/* Task text + metadata */
+.todo-main {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.todo-text {
+  font-size: 0.95rem;
+}
+
+.todo-text.completed {
+  text-decoration: line-through;
+}
+
+/* Priority badges */
+.priority-badge {
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;  /* 🔥 make Low/Medium/High bold */
+}
+
+.priority-low {
+  background: #ecfdf3;
+  color: #15803d;
+}
+.priority-medium {
+  background: #fffce1;
+  color: #c5cf04;
+}
+.priority-high {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.due-label {
+  color: #6b7280;
+}
+
+/* =========================================================
+   EDIT MODE + BUTTONS
+========================================================= */
+
+.todo-edit-input {
+  width: 100%;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+}
+
+.todo-edit-meta-row {
+  display: flex;
+  gap: 8px;
+}
+
+.todo-edit-priority,
+.todo-edit-date {
+  padding: 5px 8px;
+  background: #f9fafb;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  font-size: 0.8rem;
+}
+
+/* Stack Edit + Delete vertically */
+.todo-actions {
+  display: flex;
+  flex-direction: column; /* stack vertically */
+  gap: 6px;
+  align-items: flex-end; /* right-align in card */
+}
+
+/* base task button */
+.task-btn {
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 600;
+  background-color: #e5e7eb;
+  color: #111827;
+  transition: background-color 0.15s ease, transform 0.05s ease;
+}
+
+.task-btn:hover {
+  background-color: #d1d5db;
+  transform: translateY(-1px);
+}
+
+/* Edit / Save button (blue) */
+.edit-btn {
+  background-color: #2563eb;
+  color: #ffffff;
+}
+
+.edit-btn:hover {
+  background-color: #1d4ed8;
+}
+
+/* Delete / Cancel button (red) */
+.delete-btn {
+  background-color: #dc2626;
+  color: #ffffff;
+}
+
+.delete-btn:hover {
+  background-color: #b91c1c;
+}
+
+/* =========================================================
+   COMPLETED TASK COLORS BY PRIORITY
+========================================================= */
+
+.inline-task-text.completed.low {
+  color: #15803d;
+  text-decoration-color: #15803d;
+}
+
+.inline-task-text.completed.medium {
+  color: #c5cf04;
+  text-decoration-color: #c5cf04;
+}
+
+.inline-task-text.completed.high {
+  color: #b91c1c;
+  text-decoration-color: #b91c1c;
+}
+
+.todo-text.completed.low {
+  color: #15803d;
+  text-decoration-color: #15803d;
+}
+
+.todo-text.completed.medium {
+  color: #c5cf04;
+  text-decoration-color: #c5cf04;
+}
+
+.todo-text.completed.high {
+  color: #b91c1c;
+  text-decoration-color: #b91c1c;
+}
+
+/* =========================================================
+   DARK MODE THEME
+========================================================= */
+
+body.dark-mode {
+  background: #020617; /* slate-950 vibe */
+  color: #e5e7eb;
+}
+
+/* Top bar */
+body.dark-mode .topbar {
+  background: #020617;
+  border-bottom-color: #111827;
+}
+
+/* username in dark mode */
+body.dark-mode .topbar-username {
+  color: #e5e7eb;
+}
+
+body.dark-mode .topbar-user {
+  color: #9ca3af;
+}
+
+/* Cards and columns */
+body.dark-mode .todo-card,
+body.dark-mode .priority-column {
+  background: #020617;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7);
+}
+
+/* Make individual task cards dark too */
+body.dark-mode .priority-task-card {
+  background: #020617;
+  border-color: #111827;
+}
+
+/* Inputs */
+body.dark-mode .todo-input,
+body.dark-mode .todo-date-input,
+body.dark-mode .todo-priority-select,
+body.dark-mode .todo-sort-select,
+body.dark-mode .todo-edit-input,
+body.dark-mode .todo-edit-date,
+body.dark-mode .todo-edit-priority,
+body.dark-mode .inline-edit-text,
+body.dark-mode .inline-edit-date {
+  background: #020617;
+  color: #e5e7eb;
+  border-color: #374151;
+}
+
+/* Sort dropdown in dark mode */
+body.dark-mode .todo-sort-select {
+  background: #020617;
+  border-color: #374151;
+  color: #e5e7eb;
+}
+
+/* Progress bar in dark mode */
+body.dark-mode .progress-label-row {
+  color: #9ca3af;
+}
+
+body.dark-mode .progress-bar {
+  background: #111827;
+}
+
+/* Text inside tasks / inline list */
+body.dark-mode .todo-text,
+body.dark-mode .inline-task-text {
+  color: #e5e7eb;
+}
+
+/* Due labels + count */
+body.dark-mode .inline-due {
+  background: #111827;
+  color: #e5e7eb;
+}
+
+body.dark-mode .due-label {
+  color: #9ca3af;
+}
+
+body.dark-mode .todo-filter {
+  color: #9ca3af;
+}
+
+body.dark-mode .todo-filter.active {
+  color: #e5e7eb;
+}
+
+body.dark-mode .todo-count {
+  color: #9ca3af;
+}
+
+/* Checkboxes on dark background */
+body.dark-mode .checkmark,
+body.dark-mode .inline-checkmark {
+  border-color: #e5e7eb;
+}
+
+body.dark-mode .todo-checkbox input:checked + .checkmark::after,
+body.dark-mode .inline-checkbox input:checked + .inline-checkmark::after {
+  color: #e5e7eb;
+}
+
+/* Theme toggle in dark mode */
+body.dark-mode .theme-toggle-btn {
+  background: #111827;
+  color: #e5e7eb;
+  border-color: #374151;
+}
+
+body.dark-mode .theme-toggle-btn:hover {
+  background: #1f2937;
+}
+
+/* 🔥 Dark-mode priority pills (low/med/high) */
+body.dark-mode .priority-low {
+  background: #064e3b;
+  color: #bbf7d0;
+}
+
+body.dark-mode .priority-medium {
+  background: #3b2400 !important;   /* deep brown like screenshot */
+  color: #facc15 !important;        /* clean readable yellow text */
+  font-weight: 700 !important;      /* bold */
+  border: 1px solid #4a2e00;        /* subtle outline to match style */
+}
+
+
+body.dark-mode .priority-high {
+  background: #7f1d1d;
+  color: #fecaca;
+}
+
+/* =========================================================
+   DASHBOARD THREE-COLUMN LAYOUT + WIDGETS
+========================================================= */
+
+/* Main 3-column wrapper: left = cards, middle = board, right = widgets */
+.dashboard-3col {
+  display: flex;
+  align-items: flex-start;
+  gap: 32px;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* LEFT COLUMN -------------------------------------------------- */
+.col-left {
+  flex: 0 0 38%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* MIDDLE COLUMN (priority board) ------------------------------- */
+.col-middle {
+  flex: 0 0 34%;
+}
+
+.col-middle .board-wrapper {
+  width: 100%;
+  max-width: 100%;
+}
+
+/* stack priority boxes vertically inside middle column */
+.col-middle .priority-columns {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 22px;
+}
+
+/* RIGHT COLUMN (widgets) -------------------------------------- */
+.col-right {
+  flex: 0 0 24%;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* generic widget card */
+.dashboard-widget {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 16px 18px;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
+}
+
+.dashboard-widget-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+/* Upcoming list */
+.upcoming-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.upcoming-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+}
+
+.upcoming-text {
+  font-size: 0.85rem;
+}
+
+.upcoming-date-pill {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: #eef0f3;
+}
+
+.upcoming-empty {
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+/* Notes */
+.notes-textarea {
+  width: 100%;
+  min-height: 90px;
+  resize: vertical;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  padding: 8px 10px;
+  font-size: 0.9rem;
+  background: #f9fafb;
+}
+
+/* Quote (old – harmless if unused) */
+.quote-text {
+  font-size: 0.9rem;
+  margin-bottom: 6px;
+}
+
+.quote-author {
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+/* Calendar (Task Calendar widget) ----------------------------- */
+
+.calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.calendar-month-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.calendar-nav-btn {
+  border: none;
+  background: #eef0f3;
+  border-radius: 999px;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.calendar-nav-btn:hover {
+  background: #e5e7eb;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  font-size: 0.75rem;
+  margin-bottom: 10px;
+}
+
+.calendar-day-label {
+  text-align: center;
+  font-weight: 600;
+  color: #6b7280;
+  padding-bottom: 2px;
+}
+
+/* empty cells before first of month */
+.calendar-day.empty {
+  background: transparent;
+  border: none;
+}
+
+/* day buttons */
+.calendar-day {
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  border-radius: 8px;
+  padding: 6px 0;
+  text-align: center;
+  cursor: pointer;
+  position: relative;
+}
+
+.calendar-day:hover {
+  background: #e5e7eb;
+}
+
+/* highlight full cell for days that have tasks */
+.calendar-day.has-task {
+  background: #fff7ed;      /* soft orange */
+  color: #c2410c;           /* deeper orange text */
+  font-weight: 600;
+  border-color: #fed7aa;    /* light orange border */
+}
+
+/* currently selected date */
+.calendar-day.selected {
+  background: #111827;
+  color: #ffffff;
+  border-color: #111827;
+}
+
+/* if a day has tasks AND is selected, keep the selected style */
+.calendar-day.has-task.selected {
+  background: #111827;
+  color: #ffffff;
+  border-color: #111827;
+}
+
+/* list of tasks for selected day */
+.calendar-task-list {
+  border-top: 1px solid #e5e7eb;
+  padding-top: 8px;
+  margin-top: 4px;
+}
+
+.calendar-empty {
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+.calendar-task-list ul {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.calendar-task-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+}
+
+.calendar-task-tag {
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+/* reuse priority colors for tags */
+.calendar-low {
+  background: #ecfdf3;
+  color: #15803d;
+}
+.calendar-medium {
+  background: #fffce1;
+  color: #c5cf04;
+}
+.calendar-high {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+/* Responsive: stack vertically on smaller screens */
+@media (max-width: 1200px) {
+  .dashboard-3col {
+    gap: 20px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .dashboard-3col {
+    flex-direction: column;
+    max-width: 650px;
+  }
+
+  .col-left,
+  .col-middle,
+  .col-right {
+    flex: 1 1 auto;
+  }
+
+  /* restore 3-column grid for board when stacked, if you want */
+  .col-middle .priority-columns {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Dark-mode tweaks for widgets + calendar */
+body.dark-mode .dashboard-widget {
+  background: #020617;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7);
+}
+
+body.dark-mode .upcoming-item {
+  background: #020617;
+  border-color: #111827;
+}
+
+body.dark-mode .upcoming-date-pill {
+  background: #111827;
+  color: #e5e7eb;
+}
+
+body.dark-mode .notes-textarea {
+  background: #020617;
+  border-color: #111827;
+  color: #e5e7eb;
+}
+
+body.dark-mode .calendar-day {
+  background: #020617;
+  border: 1px solid #111827;
+  color: #e5e7eb;
+}
+
+body.dark-mode .calendar-day:hover {
+  background: #111827;
+}
+
+/* dark-mode highlight for days with tasks */
+body.dark-mode .calendar-day.has-task {
+  background: #7c2d12;      /* dark orange-brown */
+  border-color: #ea580c;    /* bright orange border */
+  color: #ffedd5;           /* light orange text */
+}
+
+/* selected + has-task in dark mode */
+body.dark-mode .calendar-day.has-task.selected {
+  background: #e5e7eb;
+  color: #020617;
+  border-color: #e5e7eb;
+}
+
+body.dark-mode .calendar-day.selected {
+  background: #e5e7eb;
+  color: #020617;
+  border-color: #e5e7eb;
+}
+
+body.dark-mode .calendar-task-list {
+  border-top-color: #111827;
+}
