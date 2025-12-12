@@ -21,13 +21,16 @@ export default function Login() {
       client_id: clientId,
       callback: async (response) => {
         try {
-          // Send ID token to backend
-          const res = await fetch("http://localhost:3001/api/auth/google", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            credentials: "include",
-            body: JSON.stringify({ idToken: response.credential }),
-          });
+          // Send ID token to backend (Render, not localhost)
+          const res = await fetch(
+            "https://todo-backend-0drg.onrender.com/api/auth/google",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              credentials: "include",
+              body: JSON.stringify({ idToken: response.credential }),
+            }
+          );
 
           if (!res.ok) {
             console.error("Login failed");

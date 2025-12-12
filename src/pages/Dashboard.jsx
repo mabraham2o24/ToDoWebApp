@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const API_BASE = "http://localhost:3001/api";
+// 🔁 Use Render backend instead of localhost
+// You can leave this exactly like this.
+const API_BASE = "https://todo-backend-0drg.onrender.com/api";
 
 export default function Dashboard() {
   const [user, setUser] = useState(null);
