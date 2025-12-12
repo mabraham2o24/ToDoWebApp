@@ -5,11 +5,7 @@ Being a student comes with a lot of responsibilities and tasks to complete. Alon
 
 ---
 
-### **Frontend (Vercel)**
-Website Link: https://to-do-web-app-swart.vercel.app/ 
-
-### **Backend API (Render)**
-https://todo-backend-0drg.onrender.com
+## Website Link: https://to-do-web-app-swart.vercel.app/ 
 
 ---
 ## Tech Stack
