@@ -13,6 +13,15 @@ const Task = require("./models/Task");
 
 const app = express();
 
+// Are we running in production? (Render)
+const isProduction = process.env.NODE_ENV === "production";
+
+// When behind a proxy (like Render), this helps Express see the real protocol (https)
+// which is important for secure cookies.
+if (isProduction) {
+  app.set("trust proxy", 1);
+}
+
 // Pull important env vars
 const MONGODB_URI = process.env.MONGODB_URI;
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
@@ -34,10 +43,15 @@ app.use(cookieParser());
 // Allow frontend to access backend with cookies
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: process.env.FRONTEND_URL,
     credentials: true,
   })
 );
+
+// Optional health route
+app.get("/", (req, res) => {
+  res.send("API is running ✅");
+});
 
 // ---------- CONNECT TO MONGODB ----------
 mongoose
@@ -91,8 +105,11 @@ app.post("/api/auth/google", async (req, res) => {
     // Send back a cookie for authentication
     res.cookie("session", sessionToken, {
       httpOnly: true,
-      sameSite: "lax",
-      secure: false, // OK for localhost
+      // For cross-site (Vercel frontend -> Render backend) we need:
+      //   sameSite: "none", secure: true  in production
+      // But for localhost we keep lax + not secure
+      sameSite: isProduction ? "none" : "lax",
+      secure: isProduction,
     });
 
     return res.json({ message: "Login successful" });
@@ -120,7 +137,10 @@ app.get("/api/me", (req, res) => {
 
 // ---------- LOGOUT ----------
 app.post("/api/logout", (req, res) => {
-  res.clearCookie("session");
+  res.clearCookie("session", {
+    sameSite: isProduction ? "none" : "lax",
+    secure: isProduction,
+  });
   res.json({ message: "Logged out" });
 });
 
