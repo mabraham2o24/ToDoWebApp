@@ -73,5 +73,16 @@ https://todo-backend-0drg.onrender.com
 - Google-styled login button  
 
 ---
+## The screenshots below is to show that the website works across different accounts and is not hardcoded. 
+### Account 1 - mahima200016@gmail.com
+<img width="1890" height="868" alt="image" src="https://github.com/user-attachments/assets/a44d1006-713b-492c-b1ef-07ad14d60a47" />
+<img width="1883" height="950" alt="image" src="https://github.com/user-attachments/assets/0326dc25-4d0f-4b25-be85-74dbaf22b614" />
+
+
+### Account 2 - msa5728@psu.edu
+<img width="1899" height="868" alt="image" src="https://github.com/user-attachments/assets/902d0129-7004-40ac-8e06-88990440da9e" />
+<img width="1890" height="970" alt="image" src="https://github.com/user-attachments/assets/b32a710c-9e40-4a3e-88bc-5fea4c9f9d9b" />
+
+
 
 
