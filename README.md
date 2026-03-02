@@ -1,16 +1,90 @@
-# React + Vite
+# **What To-Do - Web App**
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Overview
+Being a student comes with a lot of responsibilities and tasks to complete. Along with being a student we also have every day life to live and things to do for that whether it is for work, personal errands, etc. My goal is to build a simple and effective to-do list web application. I want to build a software that incorporates everything needed for a planner type application of good quality. I also want to use this project as an opportunity to expand my front-end skills and work with more front-end languages and tools.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Website Link: https://to-do-web-app-swart.vercel.app/ 
+## Youtube Video: https://youtu.be/MNUZ6kKMUSI 
+### Presentation - In case the YouTube video is unclear I have attached the zoom video link below
+https://psu.zoom.us/rec/share/B-FA7KkFsUZUEDeRIc3rsEaBFKG6uZCGU3ws-Xp_8rp_V6jfV9KyIR4mTHRx-dqo.o00jlgbepHyIGwZo?startTime=1765508793000
 
-## React Compiler
+---
+## Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### **Frontend**
+- React  
+- Vite  
+- JavaScript (ES6+)  
+- Google Identity Services (OAuth 2.0)  
+- Custom CSS  
+- Fetch API  
 
-## Expanding the ESLint configuration
+### **Backend**
+- Node.js  
+- Express.js  
+- MongoDB + Mongoose  
+- JSON Web Tokens (JWT)  
+- Google Auth Library (`google-auth-library`)  
+- CORS with credentials  
+- Cookie-based authentication  
+- dotenv  
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### **Database**
+- MongoDB Atlas  
+- Task model includes:  
+  - `text`  
+  - `priority`  
+  - `dueDate`  
+  - `googleId` (user ID)  
+  - timestamps  
+
+---
+
+## Features
+
+### **Authentication**
+- Google Sign-In  
+- HTTP-only secure cookie sessions  
+- Redirects to dashboard after login  
+
+### **Task Management**
+- Add, edit, delete tasks  
+- Mark as complete/incomplete  
+- Select priority: Low, Medium, High  
+- Add due dates  
+- Inline editing directly in the task list  
+- Priority board (columns)  
+- Sorting options:
+  - Due date  
+  - Priority  
+  - A–Z  
+
+### **Dashboard Widgets**
+- Upcoming tasks (next 2 days)  
+- Notes widget  
+- Interactive calendar showing task dates  
+
+### **UI**
+- Dark mode toggle  
+- Clean 3-column dashboard layout  
+- Google-styled login button  
+
+---
+## The screenshots below is to show that the website works across different accounts and is not hardcoded. 
+### Account 1 - mahima200016@gmail.com
+<img width="1890" height="868" alt="image" src="https://github.com/user-attachments/assets/a44d1006-713b-492c-b1ef-07ad14d60a47" />
+<img width="1883" height="950" alt="image" src="https://github.com/user-attachments/assets/0326dc25-4d0f-4b25-be85-74dbaf22b614" />
+
+
+### Account 2 - msa5728@psu.edu
+<img width="1899" height="868" alt="image" src="https://github.com/user-attachments/assets/902d0129-7004-40ac-8e06-88990440da9e" />
+<img width="1890" height="970" alt="image" src="https://github.com/user-attachments/assets/b32a710c-9e40-4a3e-88bc-5fea4c9f9d9b" />
+
+### Testing Web-App Out - My cousin tested out my website for me to show that it works at other IP addresses and other users perfectly
+https://github.com/user-attachments/assets/6bfbe535-0d38-49ae-9561-578a76eb2abd
+
+
+
+
