@@ -13,33 +13,24 @@ https://psu.zoom.us/rec/share/B-FA7KkFsUZUEDeRIc3rsEaBFKG6uZCGU3ws-Xp_8rp_V6jfV9
 ---
 ## Tech Stack
 
-### **Frontend**
-- React  
-- Vite  
-- JavaScript (ES6+)  
-- Google Identity Services (OAuth 2.0)  
-- Custom CSS  
-- Fetch API  
+### Frontend
+- React
+- Vite
+- JavaScript (ES6+)
+- Google Identity Services (OAuth 2.0)
 
-### **Backend**
-- Node.js  
-- Express.js  
-- MongoDB + Mongoose  
-- JSON Web Tokens (JWT)  
-- Google Auth Library (`google-auth-library`)  
-- CORS with credentials  
-- Cookie-based authentication  
-- dotenv  
+### Backend
+- Node.js
+- Express.js
+- MongoDB + Mongoose
+- JWT Authentication
+- Cookie-based sessions
 
-### **Database**
-- MongoDB Atlas  
-- Task model includes:  
-  - `text`  
-  - `priority`  
-  - `dueDate`  
-  - `googleId` (user ID)  
-  - timestamps  
-
+### Cloud & Infrastructure
+- Vercel (Frontend Hosting)
+- Render (Backend Hosting)
+- MongoDB Atlas (Cloud Database)
+- UptimeRobot (Health Monitoring & Keep-Alive)
 ---
 
 ## Features
