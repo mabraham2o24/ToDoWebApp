@@ -48,7 +48,28 @@ app.use(
   })
 );
 
-// Optional health route
+/**
+ * ✅ Keep-alive / health route for UptimeRobot (free keep-alive method)
+ * - This route does NOT require auth.
+ * - It also pings MongoDB so the database sees activity (helps prevent pausing).
+ * - UptimeRobot should hit: https://<your-backend>.onrender.com/health
+ */
+app.get("/health", async (req, res) => {
+  try {
+    // If Mongo is connected, ping it to keep it active
+    if (mongoose.connection?.db) {
+      await mongoose.connection.db.admin().ping();
+      return res.status(200).send("DB OK");
+    }
+    // If not connected yet
+    return res.status(200).send("OK (DB not connected yet)");
+  } catch (err) {
+    console.error("Health check DB ping failed:", err);
+    return res.status(500).send("DB Error");
+  }
+});
+
+// Optional root route
 app.get("/", (req, res) => {
   res.send("API is running ✅");
 });
