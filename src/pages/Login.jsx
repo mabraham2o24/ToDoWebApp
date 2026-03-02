@@ -1,27 +1,45 @@
 // src/Login.jsx
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function Login() {
   const navigate = useNavigate();
+  const buttonRef = useRef(null);
+  const [gisReady, setGisReady] = useState(false);
 
+  // Wait for Google Identity script to load
   useEffect(() => {
-    /* global google */
+    let attempts = 0;
 
-    // Make sure Google script has loaded
-    if (!window.google || !window.google.accounts) return;
+    const interval = setInterval(() => {
+      attempts++;
 
-    // Load client ID from Vite env
+      if (window.google?.accounts?.id) {
+        setGisReady(true);
+        clearInterval(interval);
+      }
+
+      // Stop trying after ~10 seconds
+      if (attempts > 100) {
+        clearInterval(interval);
+        console.error("Google Identity Services failed to load.");
+      }
+    }, 100);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  // Initialize + render button once GIS is ready
+  useEffect(() => {
+    if (!gisReady || !buttonRef.current) return;
+
     const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-
-    // 🔥 DEBUG: Confirm correct client ID is being loaded
     console.log("Frontend Client ID:", clientId);
 
-    google.accounts.id.initialize({
+    window.google.accounts.id.initialize({
       client_id: clientId,
       callback: async (response) => {
         try {
-          // Send ID token to backend (Render, not localhost)
           const res = await fetch(
             "https://todo-backend-0drg.onrender.com/api/auth/google",
             {
@@ -37,7 +55,6 @@ export default function Login() {
             return;
           }
 
-          // Success → go to dashboard
           navigate("/app");
         } catch (err) {
           console.error("Error during login:", err);
@@ -45,18 +62,16 @@ export default function Login() {
       },
     });
 
-    // Render Google button
-    google.accounts.id.renderButton(
-      document.getElementById("google-signin-button"),
-      {
-        theme: "outline",
-        size: "large",
-        width: 260,
-      }
-    );
-  }, [navigate]);
+    // Clear any previous render (important for re-renders)
+    buttonRef.current.innerHTML = "";
 
-  // Background image from /public/assets/
+    window.google.accounts.id.renderButton(buttonRef.current, {
+      theme: "outline",
+      size: "large",
+      width: 260,
+    });
+  }, [gisReady, navigate]);
+
   const backgroundUrl = "/assets/loginpagebg.png";
 
   return (
@@ -70,7 +85,11 @@ export default function Login() {
           Organize tasks. Track progress. Stay on pace.
         </p>
 
-        <div id="google-signin-button" className="login-google-btn"></div>
+        <div ref={buttonRef} className="login-google-btn"></div>
+
+        {!gisReady && (
+          <p style={{ marginTop: "10px" }}>Loading Google sign-in…</p>
+        )}
 
         <p className="login-hint">
           Sign in with your Google account to continue.
