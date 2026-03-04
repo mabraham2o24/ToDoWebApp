@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 // 🔁 Use Render backend instead of localhost
@@ -34,8 +34,11 @@ export default function Dashboard() {
   // dark / light theme
   const [isDark, setIsDark] = useState(false);
 
-  // widgets: notes + calendar
+  // widgets: notes
   const [notesText, setNotesText] = useState("");
+
+  // ✅ Calendar modal toggle + state
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [calendarMonth, setCalendarMonth] = useState(() => new Date());
   const [selectedDateStr, setSelectedDateStr] = useState(() => {
     const d = new Date();
@@ -63,9 +66,7 @@ export default function Dashboard() {
   // ---------- AUTH + LOAD TASKS ----------
   useEffect(() => {
     (async () => {
-      const res = await fetch(`${API_BASE}/me`, {
-        credentials: "include",
-      });
+      const res = await fetch(`${API_BASE}/me`, { credentials: "include" });
 
       if (!res.ok) {
         navigate("/"); // not logged in → back to login
@@ -93,17 +94,24 @@ export default function Dashboard() {
 
   // ---------- DARK MODE SIDE EFFECT ----------
   useEffect(() => {
-    if (isDark) {
-      document.body.classList.add("dark-mode");
-    } else {
-      document.body.classList.remove("dark-mode");
-    }
+    if (isDark) document.body.classList.add("dark-mode");
+    else document.body.classList.remove("dark-mode");
   }, [isDark]);
+
+  // ✅ Close calendar on Escape
+  useEffect(() => {
+    if (!isCalendarOpen) return;
+    const onKeyDown = (e) => {
+      if (e.key === "Escape") setIsCalendarOpen(false);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [isCalendarOpen]);
 
   // ---------- DERIVED DATA ----------
   const filteredTasks = tasks.filter((t) => {
     if (filter === "completed") return t.completed;
-    return true; // "all"
+    return true;
   });
 
   const remainingCount = tasks.filter((t) => !t.completed).length;
@@ -138,7 +146,7 @@ export default function Dashboard() {
       return arr.sort((a, b) => a.text.localeCompare(b.text));
     }
 
-    return arr; // "none"
+    return arr;
   })();
 
   // Show the priority board only when sort is priority
@@ -148,12 +156,11 @@ export default function Dashboard() {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  // end of week = Saturday for this week (based on getDay)
+  // end of week = Saturday
   const endOfWeek = new Date(today);
   endOfWeek.setDate(endOfWeek.getDate() + (6 - endOfWeek.getDay()));
   endOfWeek.setHours(23, 59, 59, 999);
 
-  // Only consider tasks that have a dueDate and are not completed
   const dueTasks = tasks
     .filter((t) => !!parseTaskDate(t.dueDate) && !t.completed)
     .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
@@ -174,7 +181,7 @@ export default function Dashboard() {
     return d > today && d <= endOfWeek;
   });
 
-  // ---------- CALENDAR DERIVED DATA ----------
+  // ---------- CALENDAR DERIVED DATA (for modal) ----------
   const monthNames = [
     "January",
     "February",
@@ -193,25 +200,37 @@ export default function Dashboard() {
   const calendarYear = calendarMonth.getFullYear();
   const calendarMonthIndex = calendarMonth.getMonth();
   const firstWeekday = new Date(calendarYear, calendarMonthIndex, 1).getDay();
-  const daysInMonth = new Date(
-    calendarYear,
-    calendarMonthIndex + 1,
-    0
-  ).getDate();
+  const daysInMonth = new Date(calendarYear, calendarMonthIndex + 1, 0).getDate();
+
+  // Map of YYYY-MM-DD -> tasks for that day (fast lookup)
+  const tasksByDate = useMemo(() => {
+    const m = new Map();
+    for (const t of tasks) {
+      if (!t.dueDate) continue;
+      const key = t.dueDate;
+      if (!m.has(key)) m.set(key, []);
+      m.get(key).push(t);
+    }
+    return m;
+  }, [tasks]);
 
   const calendarCells = [];
-  for (let i = 0; i < firstWeekday; i++) {
-    calendarCells.push(null);
-  }
+  for (let i = 0; i < firstWeekday; i++) calendarCells.push(null);
+
   for (let day = 1; day <= daysInMonth; day++) {
     const dateObj = new Date(calendarYear, calendarMonthIndex, day);
     const dateStr = dateObj.toISOString().slice(0, 10);
-    const hasTasks = tasks.some((t) => t.dueDate === dateStr);
-    calendarCells.push({ day, dateStr, hasTasks });
+    const dayTasks = tasksByDate.get(dateStr) || [];
+    calendarCells.push({
+      day,
+      dateStr,
+      hasTasks: dayTasks.length > 0,
+      count: dayTasks.length,
+    });
   }
 
   const calendarMonthLabel = `${monthNames[calendarMonthIndex]} ${calendarYear}`;
-  const tasksOnSelectedDate = tasks.filter((t) => t.dueDate === selectedDateStr);
+  const tasksOnSelectedDate = tasksByDate.get(selectedDateStr) || [];
 
   const goPrevMonth = () => {
     setCalendarMonth(
@@ -368,16 +387,13 @@ export default function Dashboard() {
   };
 
   const handleEditKeyDown = (e) => {
-    if (e.key === "Enter") {
-      saveEdit();
-    } else if (e.key === "Escape") {
-      cancelEdit();
-    }
+    if (e.key === "Enter") saveEdit();
+    else if (e.key === "Escape") cancelEdit();
   };
 
   const handleEditTextChange = (e) => setEditingText(e.target.value);
 
-  // ---------- INLINE EDIT HANDLERS (MY TASKS LIST) ----------
+  // ---------- INLINE EDIT HANDLERS ----------
   const startInlineEdit = (task, field) => {
     setInlineEditId(task.id);
     setInlineEditField(field);
@@ -436,11 +452,8 @@ export default function Dashboard() {
   };
 
   const handleInlineKeyDown = (e) => {
-    if (e.key === "Enter") {
-      saveInlineEdit();
-    } else if (e.key === "Escape") {
-      cancelInlineEdit();
-    }
+    if (e.key === "Enter") saveInlineEdit();
+    else if (e.key === "Escape") cancelInlineEdit();
   };
 
   // ---------- REUSABLE RENDER FOR A TASK ROW (COLUMNS) ----------
@@ -451,7 +464,6 @@ export default function Dashboard() {
 
     return (
       <div className="todo-item-column">
-        {/* checkbox */}
         <label className="todo-checkbox">
           <input
             type="checkbox"
@@ -461,7 +473,6 @@ export default function Dashboard() {
           <span className="checkmark" />
         </label>
 
-        {/* middle area */}
         <div className="todo-main">
           {isEditing ? (
             <>
@@ -496,8 +507,7 @@ export default function Dashboard() {
             <>
               <span
                 className={
-                  "todo-text" +
-                  (task.completed ? ` completed ${task.priority}` : "")
+                  "todo-text" + (task.completed ? ` completed ${task.priority}` : "")
                 }
               >
                 {task.text}
@@ -507,16 +517,12 @@ export default function Dashboard() {
                 <span className={"priority-badge priority-" + task.priority}>
                   {priorityLabel}
                 </span>
-
-                {task.dueDate && (
-                  <span className="due-label">Due: {task.dueDate}</span>
-                )}
+                {task.dueDate && <span className="due-label">Due: {task.dueDate}</span>}
               </div>
             </>
           )}
         </div>
 
-        {/* actions */}
         <div className="todo-actions">
           {isEditing ? (
             <>
@@ -529,16 +535,10 @@ export default function Dashboard() {
             </>
           ) : (
             <>
-              <button
-                className="task-btn edit-btn"
-                onClick={() => startEditing(task)}
-              >
+              <button className="task-btn edit-btn" onClick={() => startEditing(task)}>
                 Edit
               </button>
-              <button
-                className="task-btn delete-btn"
-                onClick={() => deleteTask(task.id)}
-              >
+              <button className="task-btn delete-btn" onClick={() => deleteTask(task.id)}>
                 Delete
               </button>
             </>
@@ -548,9 +548,223 @@ export default function Dashboard() {
     );
   };
 
+  // ---------- CALENDAR MODAL ----------
+  const calendarModal = isCalendarOpen ? (
+    <div
+      role="dialog"
+      aria-modal="true"
+      onClick={() => setIsCalendarOpen(false)}
+      style={{
+        position: "fixed",
+        inset: 0,
+        background: "rgba(0,0,0,0.55)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: 16,
+        zIndex: 9999,
+      }}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          width: "min(1050px, 100%)",
+          maxHeight: "85vh",
+          overflow: "auto",
+          borderRadius: 18,
+          padding: 18,
+          border: "1px solid rgba(255,255,255,0.08)",
+          background: isDark ? "#020617" : "#ffffff",
+          color: isDark ? "#e5e7eb" : "#111827",
+          boxShadow: "0 18px 60px rgba(0,0,0,0.35)",
+        }}
+      >
+        {/* Header */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 12,
+            marginBottom: 12,
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <h2 style={{ margin: 0, fontSize: 18, fontWeight: 800 }}>
+              Calendar View
+            </h2>
+            <span style={{ opacity: 0.75, fontSize: 13 }}>
+              Click a day to see tasks due
+            </span>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setIsCalendarOpen(false)}
+            className="task-btn delete-btn"
+          >
+            Close
+          </button>
+        </div>
+
+        {/* Month nav */}
+        <div className="calendar-header" style={{ marginBottom: 10 }}>
+          <button type="button" className="calendar-nav-btn" onClick={goPrevMonth}>
+            ‹
+          </button>
+          <span className="calendar-month-label">{calendarMonthLabel}</span>
+          <button type="button" className="calendar-nav-btn" onClick={goNextMonth}>
+            ›
+          </button>
+        </div>
+
+        {/* Main layout: grid + day detail */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1.1fr 0.9fr",
+            gap: 16,
+          }}
+        >
+          {/* Calendar grid */}
+          <div>
+            <div className="calendar-grid" style={{ fontSize: 13 }}>
+              {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map((d) => (
+                <div key={d} className="calendar-day-label">
+                  {d}
+                </div>
+              ))}
+
+              {calendarCells.map((cell, idx) =>
+                cell ? (
+                  <button
+                    key={idx}
+                    type="button"
+                    className={
+                      "calendar-day" +
+                      (cell.hasTasks ? " has-task" : "") +
+                      (cell.dateStr === selectedDateStr ? " selected" : "")
+                    }
+                    onClick={() => setSelectedDateStr(cell.dateStr)}
+                    style={{ position: "relative" }}
+                    title={cell.hasTasks ? `${cell.count} task(s) due` : "No tasks due"}
+                  >
+                    {cell.day}
+                    {cell.hasTasks && (
+                      <span
+                        style={{
+                          position: "absolute",
+                          top: 6,
+                          right: 6,
+                          fontSize: 11,
+                          fontWeight: 800,
+                          padding: "2px 6px",
+                          borderRadius: 999,
+                          background: isDark ? "#111827" : "#eef0f3",
+                        }}
+                      >
+                        {cell.count}
+                      </span>
+                    )}
+                  </button>
+                ) : (
+                  <div key={idx} className="calendar-day empty" />
+                )
+              )}
+            </div>
+          </div>
+
+          {/* Selected day tasks */}
+          <div
+            style={{
+              borderRadius: 14,
+              border: isDark ? "1px solid #111827" : "1px solid #e5e7eb",
+              background: isDark ? "#020617" : "#ffffff",
+              padding: 14,
+            }}
+          >
+            <div style={{ display: "flex", justifyContent: "space-between", gap: 10 }}>
+              <div>
+                <div style={{ fontWeight: 800, marginBottom: 4 }}>Tasks due</div>
+                <div style={{ opacity: 0.75, fontSize: 13 }}>{selectedDateStr}</div>
+              </div>
+
+              <button
+                type="button"
+                className="task-btn edit-btn"
+                onClick={() => {
+                  // Jump to month of today if user wants
+                  const d = new Date();
+                  const ds = d.toISOString().slice(0, 10);
+                  setCalendarMonth(new Date(d.getFullYear(), d.getMonth(), 1));
+                  setSelectedDateStr(ds);
+                }}
+              >
+                Today
+              </button>
+            </div>
+
+            <div style={{ marginTop: 12 }}>
+              {tasksOnSelectedDate.length === 0 ? (
+                <p className="calendar-empty" style={{ margin: 0 }}>
+                  No tasks due this day.
+                </p>
+              ) : (
+                <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 8 }}>
+                  {tasksOnSelectedDate
+                    .slice()
+                    .sort((a, b) => {
+                      const order = { high: 0, medium: 1, low: 2 };
+                      return (order[a.priority] ?? 9) - (order[b.priority] ?? 9);
+                    })
+                    .map((t) => (
+                      <li
+                        key={t.id}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          gap: 10,
+                          padding: "10px 10px",
+                          borderRadius: 12,
+                          background: isDark ? "#0b1220" : "#f9fafb",
+                          border: isDark ? "1px solid #111827" : "1px solid #e5e7eb",
+                        }}
+                      >
+                        <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                          <span
+                            style={{
+                              fontWeight: 700,
+                              textDecoration: t.completed ? "line-through" : "none",
+                              opacity: t.completed ? 0.75 : 1,
+                            }}
+                          >
+                            {t.text}
+                          </span>
+                          <span style={{ fontSize: 12, opacity: 0.75 }}>
+                            {t.completed ? "Completed" : "Not completed"}
+                          </span>
+                        </div>
+
+                        <span className={"calendar-task-tag calendar-" + (t.priority || "medium")}>
+                          {(t.priority || "medium").charAt(0).toUpperCase() + (t.priority || "medium").slice(1)}
+                        </span>
+                      </li>
+                    ))}
+                </ul>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  ) : null;
+
   // ---------- JSX ----------
   return (
     <div className="page">
+      {calendarModal}
+
       <header className="topbar">
         {/* LEFT: user name */}
         <div className="topbar-section topbar-left">
@@ -567,8 +781,16 @@ export default function Dashboard() {
           </h1>
         </div>
 
-        {/* RIGHT: theme + logout */}
+        {/* RIGHT: calendar + theme + logout */}
         <div className="topbar-section topbar-right">
+          <button
+            className="theme-toggle-btn"
+            onClick={() => setIsCalendarOpen(true)}
+            title="Open Calendar View"
+          >
+            📅 Calendar
+          </button>
+
           <button
             className="theme-toggle-btn"
             onClick={() => setIsDark((prev) => !prev)}
@@ -583,15 +805,12 @@ export default function Dashboard() {
       </header>
 
       <main className="content">
-        {/* 3-column dashboard layout */}
         <div className={`dashboard-3col ${showPriorityBoard ? "" : "no-middle"}`}>
-          {/* LEFT COLUMN: My Tasks + list card */}
+          {/* LEFT COLUMN */}
           <div className="col-left">
-            {/* CARD 1: add task + priority/date */}
             <section className="todo-card">
               <h1 className="todo-title">My Tasks</h1>
 
-              {/* input row */}
               <div className="todo-input-row">
                 <input
                   className="todo-input"
@@ -606,7 +825,6 @@ export default function Dashboard() {
                 </button>
               </div>
 
-              {/* priority + date for NEW task */}
               <div className="todo-meta-input-row">
                 <select
                   className="todo-priority-select"
@@ -627,9 +845,7 @@ export default function Dashboard() {
               </div>
             </section>
 
-            {/* CARD 2: filters + progress + inline list */}
             <section className="todo-card">
-              {/* filters + sort */}
               <div className="todo-filter-row">
                 <div className="todo-filters">
                   <button
@@ -648,7 +864,6 @@ export default function Dashboard() {
                     Completed
                   </button>
 
-                  {/* Sort dropdown next to Completed */}
                   <select
                     className="todo-priority-select todo-sort-select"
                     value={sortMode}
@@ -662,7 +877,6 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              {/* PROGRESS BAR */}
               <div className="progress-section">
                 <div className="progress-label-row">
                   <span>Progress</span>
@@ -679,7 +893,6 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              {/* INLINE SORTED LIST */}
               <div className="todo-inline-list">
                 {sortedForTop.length === 0 ? (
                   <p className="todo-inline-empty">No tasks match this filter yet.</p>
@@ -692,7 +905,6 @@ export default function Dashboard() {
 
                     return (
                       <div key={task.id} className="todo-inline-item">
-                        {/* checkbox */}
                         <label className="inline-checkbox">
                           <input
                             type="checkbox"
@@ -702,7 +914,6 @@ export default function Dashboard() {
                           <span className="inline-checkmark" />
                         </label>
 
-                        {/* task name: click to edit */}
                         {isEditingText ? (
                           <input
                             className="inline-edit-text"
@@ -721,19 +932,14 @@ export default function Dashboard() {
                             onClick={() => startInlineEdit(task, "text")}
                           >
                             {task.text}
-                            {/* priority label visible only when sorted by priority */}
                             {sortMode === "priority" && (
-                              <span
-                                className={`inline-priority-tag inline-${task.priority}`}
-                              >
-                                {task.priority.charAt(0).toUpperCase() +
-                                  task.priority.slice(1)}
+                              <span className={`inline-priority-tag inline-${task.priority}`}>
+                                {task.priority.charAt(0).toUpperCase() + task.priority.slice(1)}
                               </span>
                             )}
                           </span>
                         )}
 
-                        {/* due date: click to edit */}
                         {task.dueDate || isEditingDate ? (
                           isEditingDate ? (
                             <input
@@ -769,12 +975,11 @@ export default function Dashboard() {
             </section>
           </div>
 
-          {/* MIDDLE COLUMN: priority board (ONLY when sorted by priority) */}
+          {/* MIDDLE COLUMN: priority board */}
           {showPriorityBoard && (
             <div className="col-middle">
               <section className="board-wrapper">
                 <div className="priority-columns">
-                  {/* LOW */}
                   <div className="priority-column">
                     <h3 className="priority-title low">Low Priority</h3>
                     {filteredTasks
@@ -786,7 +991,6 @@ export default function Dashboard() {
                       ))}
                   </div>
 
-                  {/* MEDIUM */}
                   <div className="priority-column">
                     <h3 className="priority-title medium">Medium Priority</h3>
                     {filteredTasks
@@ -798,7 +1002,6 @@ export default function Dashboard() {
                       ))}
                   </div>
 
-                  {/* HIGH */}
                   <div className="priority-column">
                     <h3 className="priority-title high">High Priority</h3>
                     {filteredTasks
@@ -814,9 +1017,8 @@ export default function Dashboard() {
             </div>
           )}
 
-          {/* RIGHT COLUMN: widgets (Overdue, Today, This Week, Notes, Calendar) */}
+          {/* RIGHT COLUMN: smart widgets + notes (calendar removed) */}
           <div className="col-right">
-            {/* Overdue */}
             <section className="dashboard-widget">
               <h3 className="dashboard-widget-title">Overdue</h3>
               {overdueTasks.length === 0 ? (
@@ -833,7 +1035,6 @@ export default function Dashboard() {
               )}
             </section>
 
-            {/* Due Today */}
             <section className="dashboard-widget">
               <h3 className="dashboard-widget-title">Due Today</h3>
               {dueTodayTasks.length === 0 ? (
@@ -850,7 +1051,6 @@ export default function Dashboard() {
               )}
             </section>
 
-            {/* Due This Week */}
             <section className="dashboard-widget">
               <h3 className="dashboard-widget-title">Due This Week</h3>
               {dueThisWeekTasks.length === 0 ? (
@@ -867,7 +1067,6 @@ export default function Dashboard() {
               )}
             </section>
 
-            {/* Notes widget */}
             <section className="dashboard-widget">
               <h3 className="dashboard-widget-title">Notes</h3>
               <textarea
@@ -876,73 +1075,6 @@ export default function Dashboard() {
                 value={notesText}
                 onChange={(e) => setNotesText(e.target.value)}
               />
-            </section>
-
-            {/* Calendar widget */}
-            <section className="dashboard-widget">
-              <h3 className="dashboard-widget-title">Task Calendar</h3>
-
-              <div className="calendar-header">
-                <button
-                  type="button"
-                  className="calendar-nav-btn"
-                  onClick={goPrevMonth}
-                >
-                  ‹
-                </button>
-                <span className="calendar-month-label">{calendarMonthLabel}</span>
-                <button
-                  type="button"
-                  className="calendar-nav-btn"
-                  onClick={goNextMonth}
-                >
-                  ›
-                </button>
-              </div>
-
-              <div className="calendar-grid">
-                {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map((d) => (
-                  <div key={d} className="calendar-day-label">
-                    {d}
-                  </div>
-                ))}
-
-                {calendarCells.map((cell, idx) =>
-                  cell ? (
-                    <button
-                      key={idx}
-                      type="button"
-                      className={
-                        "calendar-day" +
-                        (cell.hasTasks ? " has-task" : "") +
-                        (cell.dateStr === selectedDateStr ? " selected" : "")
-                      }
-                      onClick={() => setSelectedDateStr(cell.dateStr)}
-                    >
-                      {cell.day}
-                    </button>
-                  ) : (
-                    <div key={idx} className="calendar-day empty" />
-                  )
-                )}
-              </div>
-
-              <div className="calendar-task-list">
-                {tasksOnSelectedDate.length === 0 ? (
-                  <p className="calendar-empty">No tasks due this day.</p>
-                ) : (
-                  <ul>
-                    {tasksOnSelectedDate.map((t) => (
-                      <li key={t.id} className="calendar-task-item">
-                        <span className="calendar-task-text">{t.text}</span>
-                        <span className={"calendar-task-tag calendar-" + t.priority}>
-                          {t.priority.charAt(0).toUpperCase() + t.priority.slice(1)}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
             </section>
           </div>
         </div>
