@@ -142,18 +142,38 @@ export default function Dashboard() {
   })();
 
   // Upcoming tasks (next 2 days, not completed)
+  // ---------- SMART DUE BUCKETS (Overdue / Today / This Week) ----------
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  const twoDaysFromNow = new Date(today);
-  twoDaysFromNow.setDate(twoDaysFromNow.getDate() + 2);
 
-  const upcomingTasks = tasks
-    .filter((t) => {
-      const d = parseTaskDate(t.dueDate);
-      if (!d || t.completed) return false;
-      return d >= today && d <= twoDaysFromNow;
-    })
+  const endOfToday = new Date(today);
+  endOfToday.setHours(23, 59, 59, 999);
+
+  // end of week = upcoming Sunday (or same day if today is Sunday)
+  const endOfWeek = new Date(today);
+  endOfWeek.setDate(endOfWeek.getDate() + (6 - endOfWeek.getDay()));
+  endOfWeek.setHours(23, 59, 59, 999);
+
+  // Only consider tasks that have a dueDate and are not completed
+  const dueTasks = tasks
+    .filter((t) => !!parseTaskDate(t.dueDate) && !t.completed)
     .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
+
+  const overdueTasks = dueTasks.filter((t) => {
+    const d = parseTaskDate(t.dueDate);
+    return d && d < today;
+  });
+
+  const dueTodayTasks = dueTasks.filter((t) => {
+    const d = parseTaskDate(t.dueDate);
+    return d && d.getTime() === today.getTime();
+  });
+
+  const dueThisWeekTasks = dueTasks.filter((t) => {
+    const d = parseTaskDate(t.dueDate);
+    if (!d) return false;
+    return d > today && d <= endOfWeek;
+  });
 
   // ---------- CALENDAR DERIVED DATA ----------
   const monthNames = [
