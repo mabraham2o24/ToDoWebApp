@@ -549,7 +549,7 @@ export default function Dashboard() {
       </header>
 
       <main className="content">
-        <div className="dashboard-3col">
+        <div className={`dashboard-3col ${showPriorityBoard ? "" : "no-middle"}`}>
           {/* LEFT COLUMN */}
           <div className="col-left">
             {/* CARD 1: add task */}

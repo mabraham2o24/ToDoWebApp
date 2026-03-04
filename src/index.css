@@ -1266,3 +1266,33 @@ body.dark-mode .calendar-task-list {
 .dashboard-3col.show-priority .col-right {
   flex: 0 0 24%;
 }
+
+/* =========================================================
+   LAYOUT: When middle column is hidden, make it 2-column
+========================================================= */
+
+.dashboard-3col.no-middle {
+  display: grid;
+  grid-template-columns: 1.35fr 0.65fr; /* left bigger, right smaller */
+  gap: 32px;
+  align-items: start;
+}
+
+/* make left/right work nicely in grid mode */
+.dashboard-3col.no-middle .col-left,
+.dashboard-3col.no-middle .col-right {
+  flex: unset;
+  width: 100%;
+}
+
+/* right column gets a bit wider than before */
+.dashboard-3col.no-middle .col-right {
+  min-width: 320px;
+}
+
+/* responsive: stack on smaller screens */
+@media (max-width: 1024px) {
+  .dashboard-3col.no-middle {
+    grid-template-columns: 1fr;
+  }
+}
