@@ -4,6 +4,15 @@ import { useNavigate } from "react-router-dom";
 // 🔁 Use Render backend instead of localhost
 const API_BASE = "https://todo-backend-0drg.onrender.com/api";
 
+// ---- localStorage keys ----
+const LS_THEME = "todo_theme_dark";
+const LS_NOTES = "todo_notes";
+const LS_SORT = "todo_sort_mode";
+const LS_FILTER = "todo_filter";
+const LS_CAL_OPEN = "todo_calendar_open";
+const LS_CAL_MONTH = "todo_calendar_month"; // ISO string
+const LS_CAL_SELECTED = "todo_calendar_selected"; // YYYY-MM-DD
+
 export default function Dashboard() {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
@@ -16,9 +25,16 @@ export default function Dashboard() {
   const [newPriority, setNewPriority] = useState("medium");
   const [newDueDate, setNewDueDate] = useState("");
 
-  // filter + sort
-  const [filter, setFilter] = useState("all"); // all | completed
-  const [sortMode, setSortMode] = useState("none"); // none | dueDate | priority | az
+  // ✅ persisted: filter + sort
+  const [filter, setFilter] = useState(() => {
+    const v = localStorage.getItem(LS_FILTER);
+    return v === "completed" ? "completed" : "all";
+  });
+
+  const [sortMode, setSortMode] = useState(() => {
+    const v = localStorage.getItem(LS_SORT);
+    return ["none", "dueDate", "priority", "az"].includes(v) ? v : "none";
+  });
 
   // edit state (columns)
   const [editingId, setEditingId] = useState(null);
@@ -31,16 +47,33 @@ export default function Dashboard() {
   const [inlineEditField, setInlineEditField] = useState(null); // "text" | "dueDate"
   const [inlineEditValue, setInlineEditValue] = useState("");
 
-  // dark / light theme
-  const [isDark, setIsDark] = useState(false);
+  // ✅ persisted: dark / light theme
+  const [isDark, setIsDark] = useState(() => {
+    const v = localStorage.getItem(LS_THEME);
+    return v === "true";
+  });
 
-  // widgets: notes
-  const [notesText, setNotesText] = useState("");
+  // ✅ persisted: notes
+  const [notesText, setNotesText] = useState(() => {
+    return localStorage.getItem(LS_NOTES) || "";
+  });
 
-  // ✅ Calendar modal toggle + state
-  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
-  const [calendarMonth, setCalendarMonth] = useState(() => new Date());
+  // ✅ persisted: calendar modal toggle + state
+  const [isCalendarOpen, setIsCalendarOpen] = useState(() => {
+    const v = localStorage.getItem(LS_CAL_OPEN);
+    return v === "true";
+  });
+
+  const [calendarMonth, setCalendarMonth] = useState(() => {
+    const iso = localStorage.getItem(LS_CAL_MONTH);
+    const d = iso ? new Date(iso) : new Date();
+    if (Number.isNaN(d.getTime())) return new Date();
+    return new Date(d.getFullYear(), d.getMonth(), 1);
+  });
+
   const [selectedDateStr, setSelectedDateStr] = useState(() => {
+    const saved = localStorage.getItem(LS_CAL_SELECTED);
+    if (saved && /^\d{4}-\d{2}-\d{2}$/.test(saved)) return saved;
     const d = new Date();
     return d.toISOString().slice(0, 10);
   });
@@ -97,6 +130,35 @@ export default function Dashboard() {
     if (isDark) document.body.classList.add("dark-mode");
     else document.body.classList.remove("dark-mode");
   }, [isDark]);
+
+  // ✅ persist settings
+  useEffect(() => {
+    localStorage.setItem(LS_THEME, String(isDark));
+  }, [isDark]);
+
+  useEffect(() => {
+    localStorage.setItem(LS_NOTES, notesText);
+  }, [notesText]);
+
+  useEffect(() => {
+    localStorage.setItem(LS_SORT, sortMode);
+  }, [sortMode]);
+
+  useEffect(() => {
+    localStorage.setItem(LS_FILTER, filter);
+  }, [filter]);
+
+  useEffect(() => {
+    localStorage.setItem(LS_CAL_OPEN, String(isCalendarOpen));
+  }, [isCalendarOpen]);
+
+  useEffect(() => {
+    localStorage.setItem(LS_CAL_MONTH, calendarMonth.toISOString());
+  }, [calendarMonth]);
+
+  useEffect(() => {
+    localStorage.setItem(LS_CAL_SELECTED, selectedDateStr);
+  }, [selectedDateStr]);
 
   // ✅ Close calendar on Escape
   useEffect(() => {
@@ -579,7 +641,6 @@ export default function Dashboard() {
           boxShadow: "0 18px 60px rgba(0,0,0,0.35)",
         }}
       >
-        {/* Header */}
         <div
           style={{
             display: "flex",
@@ -607,7 +668,6 @@ export default function Dashboard() {
           </button>
         </div>
 
-        {/* Month nav */}
         <div className="calendar-header" style={{ marginBottom: 10 }}>
           <button type="button" className="calendar-nav-btn" onClick={goPrevMonth}>
             ‹
@@ -618,7 +678,6 @@ export default function Dashboard() {
           </button>
         </div>
 
-        {/* Main layout: grid + day detail */}
         <div
           style={{
             display: "grid",
@@ -626,7 +685,6 @@ export default function Dashboard() {
             gap: 16,
           }}
         >
-          {/* Calendar grid */}
           <div>
             <div className="calendar-grid" style={{ fontSize: 13 }}>
               {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map((d) => (
@@ -674,7 +732,6 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Selected day tasks */}
           <div
             style={{
               borderRadius: 14,
@@ -693,7 +750,6 @@ export default function Dashboard() {
                 type="button"
                 className="task-btn edit-btn"
                 onClick={() => {
-                  // Jump to month of today if user wants
                   const d = new Date();
                   const ds = d.toISOString().slice(0, 10);
                   setCalendarMonth(new Date(d.getFullYear(), d.getMonth(), 1));
@@ -710,7 +766,16 @@ export default function Dashboard() {
                   No tasks due this day.
                 </p>
               ) : (
-                <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 8 }}>
+                <ul
+                  style={{
+                    listStyle: "none",
+                    padding: 0,
+                    margin: 0,
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 8,
+                  }}
+                >
                   {tasksOnSelectedDate
                     .slice()
                     .sort((a, b) => {
@@ -747,7 +812,8 @@ export default function Dashboard() {
                         </div>
 
                         <span className={"calendar-task-tag calendar-" + (t.priority || "medium")}>
-                          {(t.priority || "medium").charAt(0).toUpperCase() + (t.priority || "medium").slice(1)}
+                          {(t.priority || "medium").charAt(0).toUpperCase() +
+                            (t.priority || "medium").slice(1)}
                         </span>
                       </li>
                     ))}
@@ -766,12 +832,10 @@ export default function Dashboard() {
       {calendarModal}
 
       <header className="topbar">
-        {/* LEFT: user name */}
         <div className="topbar-section topbar-left">
           {user && <span className="topbar-username">{user.name}</span>}
         </div>
 
-        {/* CENTER: app name */}
         <div className="topbar-section topbar-center">
           <h1 className="app-title">
             What To-Do{" "}
@@ -781,7 +845,6 @@ export default function Dashboard() {
           </h1>
         </div>
 
-        {/* RIGHT: calendar + theme + logout */}
         <div className="topbar-section topbar-right">
           <button
             className="theme-toggle-btn"
@@ -934,7 +997,8 @@ export default function Dashboard() {
                             {task.text}
                             {sortMode === "priority" && (
                               <span className={`inline-priority-tag inline-${task.priority}`}>
-                                {task.priority.charAt(0).toUpperCase() + task.priority.slice(1)}
+                                {task.priority.charAt(0).toUpperCase() +
+                                  task.priority.slice(1)}
                               </span>
                             )}
                           </span>
