@@ -186,7 +186,7 @@ body {
   flex: 1;
   display: flex;
   flex-direction: column;
-  align-items: center;      /* centered layout */
+  align-items: center; /* centered layout */
   padding: 32px 16px;
   gap: 20px;
 }
@@ -209,6 +209,74 @@ body {
   font-size: 26px;
   margin-bottom: 20px;
   font-weight: 600;
+}
+
+/* =========================================================
+   ✅ VIEW TOGGLE (All Tasks / By Priority)
+========================================================= */
+
+.view-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 0 0 14px; /* sits nicely under title */
+}
+
+.view-toggle-label {
+  font-weight: 700;
+  color: #111827;
+  font-size: 0.9rem;
+}
+
+.view-toggle {
+  display: flex;
+  gap: 8px;
+}
+
+.view-toggle-btn {
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  background: #f9fafb;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #374151;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.05s ease,
+    border-color 0.15s ease, color 0.15s ease;
+}
+
+.view-toggle-btn:hover {
+  background: #e5e7eb;
+  transform: translateY(-1px);
+}
+
+.view-toggle-btn.active {
+  background: #111827;
+  border-color: #111827;
+  color: #ffffff;
+}
+
+/* Dark mode toggle styles */
+body.dark-mode .view-toggle-label {
+  color: #e5e7eb;
+}
+
+body.dark-mode .view-toggle-btn {
+  background: #020617;
+  color: #e5e7eb;
+  border-color: #374151;
+}
+
+body.dark-mode .view-toggle-btn:hover {
+  background: #111827;
+}
+
+body.dark-mode .view-toggle-btn.active {
+  background: #e5e7eb;
+  color: #020617;
+  border-color: #e5e7eb;
 }
 
 /* input + add button */
@@ -560,7 +628,7 @@ body.dark-mode .inline-high {
   padding: 2px 8px;
   border-radius: 999px;
   font-size: 0.75rem;
-  font-weight: 700;  /* 🔥 make Low/Medium/High bold */
+  font-weight: 700; /* 🔥 make Low/Medium/High bold */
 }
 
 .priority-low {
@@ -810,12 +878,11 @@ body.dark-mode .priority-low {
 }
 
 body.dark-mode .priority-medium {
-  background: #3b2400 !important;   /* deep brown like screenshot */
-  color: #facc15 !important;        /* clean readable yellow text */
-  font-weight: 700 !important;      /* bold */
-  border: 1px solid #4a2e00;        /* subtle outline to match style */
+  background: #3b2400 !important; /* deep brown like screenshot */
+  color: #facc15 !important; /* clean readable yellow text */
+  font-weight: 700 !important; /* bold */
+  border: 1px solid #4a2e00; /* subtle outline to match style */
 }
-
 
 body.dark-mode .priority-high {
   background: #7f1d1d;
@@ -1009,10 +1076,10 @@ body.dark-mode .priority-high {
 
 /* highlight full cell for days that have tasks */
 .calendar-day.has-task {
-  background: #fff7ed;      /* soft orange */
-  color: #c2410c;           /* deeper orange text */
+  background: #fff7ed; /* soft orange */
+  color: #c2410c; /* deeper orange text */
   font-weight: 600;
-  border-color: #fed7aa;    /* light orange border */
+  border-color: #fed7aa; /* light orange border */
 }
 
 /* currently selected date */
@@ -1101,6 +1168,12 @@ body.dark-mode .priority-high {
   .col-middle .priority-columns {
     grid-template-columns: repeat(3, 1fr);
   }
+
+  /* keep view toggle usable on mobile */
+  .view-toggle-row {
+    flex-direction: column;
+    gap: 8px;
+  }
 }
 
 /* Dark-mode tweaks for widgets + calendar */
@@ -1137,9 +1210,9 @@ body.dark-mode .calendar-day:hover {
 
 /* dark-mode highlight for days with tasks */
 body.dark-mode .calendar-day.has-task {
-  background: #7c2d12;      /* dark orange-brown */
-  border-color: #ea580c;    /* bright orange border */
-  color: #ffedd5;           /* light orange text */
+  background: #7c2d12; /* dark orange-brown */
+  border-color: #ea580c; /* bright orange border */
+  color: #ffedd5; /* light orange text */
 }
 
 /* selected + has-task in dark mode */
@@ -1157,4 +1230,39 @@ body.dark-mode .calendar-day.selected {
 
 body.dark-mode .calendar-task-list {
   border-top-color: #111827;
+}
+
+/* =========================================================
+   VIEW MODE CONTROL (All Tasks vs Priority Board)
+========================================================= */
+
+/* Default view = All Tasks */
+.dashboard-3col.show-all .col-middle {
+  display: none;
+}
+
+/* Expand left + right when middle column hidden */
+.dashboard-3col.show-all .col-left {
+  flex: 0 0 70%;
+}
+
+.dashboard-3col.show-all .col-right {
+  flex: 0 0 30%;
+}
+
+/* Priority view */
+.dashboard-3col.show-priority .col-middle {
+  display: block;
+}
+
+.dashboard-3col.show-priority .col-left {
+  flex: 0 0 38%;
+}
+
+.dashboard-3col.show-priority .col-middle {
+  flex: 0 0 34%;
+}
+
+.dashboard-3col.show-priority .col-right {
+  flex: 0 0 24%;
 }

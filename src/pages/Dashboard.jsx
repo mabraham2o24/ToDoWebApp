@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 // 🔁 Use Render backend instead of localhost
-// You can leave this exactly like this.
 const API_BASE = "https://todo-backend-0drg.onrender.com/api";
 
 export default function Dashboard() {
@@ -20,6 +19,9 @@ export default function Dashboard() {
   // filter + sort
   const [filter, setFilter] = useState("all"); // all | completed
   const [sortMode, setSortMode] = useState("none"); // none | dueDate | priority | az
+
+  // ✅ SHOW PRIORITY BOARD ONLY WHEN SORT BY PRIORITY IS SELECTED
+  const showPriorityBoard = sortMode === "priority";
 
   // edit state (columns)
   const [editingId, setEditingId] = useState(null);
@@ -94,11 +96,8 @@ export default function Dashboard() {
 
   // ---------- DARK MODE SIDE EFFECT ----------
   useEffect(() => {
-    if (isDark) {
-      document.body.classList.add("dark-mode");
-    } else {
-      document.body.classList.remove("dark-mode");
-    }
+    if (isDark) document.body.classList.add("dark-mode");
+    else document.body.classList.remove("dark-mode");
   }, [isDark]);
 
   // ---------- DERIVED DATA ----------
@@ -175,16 +174,11 @@ export default function Dashboard() {
   const calendarYear = calendarMonth.getFullYear();
   const calendarMonthIndex = calendarMonth.getMonth();
   const firstWeekday = new Date(calendarYear, calendarMonthIndex, 1).getDay();
-  const daysInMonth = new Date(
-    calendarYear,
-    calendarMonthIndex + 1,
-    0
-  ).getDate();
+  const daysInMonth = new Date(calendarYear, calendarMonthIndex + 1, 0).getDate();
 
   const calendarCells = [];
-  for (let i = 0; i < firstWeekday; i++) {
-    calendarCells.push(null);
-  }
+  for (let i = 0; i < firstWeekday; i++) calendarCells.push(null);
+
   for (let day = 1; day <= daysInMonth; day++) {
     const dateObj = new Date(calendarYear, calendarMonthIndex, day);
     const dateStr = dateObj.toISOString().slice(0, 10);
@@ -193,9 +187,7 @@ export default function Dashboard() {
   }
 
   const calendarMonthLabel = `${monthNames[calendarMonthIndex]} ${calendarYear}`;
-  const tasksOnSelectedDate = tasks.filter(
-    (t) => t.dueDate === selectedDateStr
-  );
+  const tasksOnSelectedDate = tasks.filter((t) => t.dueDate === selectedDateStr);
 
   const goPrevMonth = () => {
     setCalendarMonth(
@@ -352,11 +344,8 @@ export default function Dashboard() {
   };
 
   const handleEditKeyDown = (e) => {
-    if (e.key === "Enter") {
-      saveEdit();
-    } else if (e.key === "Escape") {
-      cancelEdit();
-    }
+    if (e.key === "Enter") saveEdit();
+    else if (e.key === "Escape") cancelEdit();
   };
 
   const handleEditTextChange = (e) => setEditingText(e.target.value);
@@ -422,11 +411,8 @@ export default function Dashboard() {
   };
 
   const handleInlineKeyDown = (e) => {
-    if (e.key === "Enter") {
-      saveInlineEdit();
-    } else if (e.key === "Escape") {
-      cancelInlineEdit();
-    }
+    if (e.key === "Enter") saveInlineEdit();
+    else if (e.key === "Escape") cancelInlineEdit();
   };
 
   // ---------- REUSABLE RENDER FOR A TASK ROW (COLUMNS) ----------
@@ -437,7 +423,6 @@ export default function Dashboard() {
 
     return (
       <div className="todo-item-column">
-        {/* checkbox */}
         <label className="todo-checkbox">
           <input
             type="checkbox"
@@ -447,7 +432,6 @@ export default function Dashboard() {
           <span className="checkmark" />
         </label>
 
-        {/* middle area */}
         <div className="todo-main">
           {isEditing ? (
             <>
@@ -502,7 +486,6 @@ export default function Dashboard() {
           )}
         </div>
 
-        {/* actions */}
         <div className="todo-actions">
           {isEditing ? (
             <>
@@ -538,12 +521,10 @@ export default function Dashboard() {
   return (
     <div className="page">
       <header className="topbar">
-        {/* LEFT: user name */}
         <div className="topbar-section topbar-left">
           {user && <span className="topbar-username">{user.name}</span>}
         </div>
 
-        {/* CENTER: app name */}
         <div className="topbar-section topbar-center">
           <h1 className="app-title">
             What To-Do{" "}
@@ -553,7 +534,6 @@ export default function Dashboard() {
           </h1>
         </div>
 
-        {/* RIGHT: theme + logout */}
         <div className="topbar-section topbar-right">
           <button
             className="theme-toggle-btn"
@@ -569,15 +549,13 @@ export default function Dashboard() {
       </header>
 
       <main className="content">
-        {/* 3-column dashboard layout */}
         <div className="dashboard-3col">
-          {/* LEFT COLUMN: My Tasks + list card */}
+          {/* LEFT COLUMN */}
           <div className="col-left">
-            {/* CARD 1: add task + priority/date */}
+            {/* CARD 1: add task */}
             <section className="todo-card">
               <h1 className="todo-title">My Tasks</h1>
 
-              {/* input row */}
               <div className="todo-input-row">
                 <input
                   className="todo-input"
@@ -592,7 +570,6 @@ export default function Dashboard() {
                 </button>
               </div>
 
-              {/* priority + date for NEW task */}
               <div className="todo-meta-input-row">
                 <select
                   className="todo-priority-select"
@@ -615,7 +592,6 @@ export default function Dashboard() {
 
             {/* CARD 2: filters + progress + inline list */}
             <section className="todo-card">
-              {/* filters + sort */}
               <div className="todo-filter-row">
                 <div className="todo-filters">
                   <button
@@ -636,7 +612,6 @@ export default function Dashboard() {
                     Completed
                   </button>
 
-                  {/* Sort dropdown next to Completed */}
                   <select
                     className="todo-priority-select todo-sort-select"
                     value={sortMode}
@@ -650,7 +625,6 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              {/* PROGRESS BAR */}
               <div className="progress-section">
                 <div className="progress-label-row">
                   <span>Progress</span>
@@ -667,7 +641,6 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              {/* INLINE SORTED LIST */}
               <div className="todo-inline-list">
                 {sortedForTop.length === 0 ? (
                   <p className="todo-inline-empty">
@@ -682,7 +655,6 @@ export default function Dashboard() {
 
                     return (
                       <div key={task.id} className="todo-inline-item">
-                        {/* checkbox */}
                         <label className="inline-checkbox">
                           <input
                             type="checkbox"
@@ -692,7 +664,6 @@ export default function Dashboard() {
                           <span className="inline-checkmark" />
                         </label>
 
-                        {/* task name: click to edit */}
                         {isEditingText ? (
                           <input
                             className="inline-edit-text"
@@ -715,7 +686,7 @@ export default function Dashboard() {
                             onClick={() => startInlineEdit(task, "text")}
                           >
                             {task.text}
-                            {/* priority label visible only when sorted by priority */}
+                            {/* label only when priority sort is selected */}
                             {sortMode === "priority" && (
                               <span
                                 className={`inline-priority-tag inline-${task.priority}`}
@@ -728,7 +699,6 @@ export default function Dashboard() {
                           </span>
                         )}
 
-                        {/* due date: click to edit */}
                         {task.dueDate || isEditingDate ? (
                           isEditingDate ? (
                             <input
@@ -770,52 +740,50 @@ export default function Dashboard() {
             </section>
           </div>
 
-          {/* MIDDLE COLUMN: priority board */}
-          <div className="col-middle">
-            <section className="board-wrapper">
-              <div className="priority-columns">
-                {/* LOW */}
-                <div className="priority-column">
-                  <h3 className="priority-title low">Low Priority</h3>
-                  {filteredTasks
-                    .filter((t) => t.priority === "low")
-                    .map((task) => (
-                      <div key={task.id} className="priority-task-card">
-                        {renderTaskRow(task)}
-                      </div>
-                    ))}
-                </div>
+          {/* ✅ MIDDLE COLUMN: ONLY render when Sort = Priority */}
+          {showPriorityBoard && (
+            <div className="col-middle">
+              <section className="board-wrapper">
+                <div className="priority-columns">
+                  <div className="priority-column">
+                    <h3 className="priority-title low">Low Priority</h3>
+                    {filteredTasks
+                      .filter((t) => t.priority === "low")
+                      .map((task) => (
+                        <div key={task.id} className="priority-task-card">
+                          {renderTaskRow(task)}
+                        </div>
+                      ))}
+                  </div>
 
-                {/* MEDIUM */}
-                <div className="priority-column">
-                  <h3 className="priority-title medium">Medium Priority</h3>
-                  {filteredTasks
-                    .filter((t) => t.priority === "medium")
-                    .map((task) => (
-                      <div key={task.id} className="priority-task-card">
-                        {renderTaskRow(task)}
-                      </div>
-                    ))}
-                </div>
+                  <div className="priority-column">
+                    <h3 className="priority-title medium">Medium Priority</h3>
+                    {filteredTasks
+                      .filter((t) => t.priority === "medium")
+                      .map((task) => (
+                        <div key={task.id} className="priority-task-card">
+                          {renderTaskRow(task)}
+                        </div>
+                      ))}
+                  </div>
 
-                {/* HIGH */}
-                <div className="priority-column">
-                  <h3 className="priority-title high">High Priority</h3>
-                  {filteredTasks
-                    .filter((t) => t.priority === "high")
-                    .map((task) => (
-                      <div key={task.id} className="priority-task-card">
-                        {renderTaskRow(task)}
-                      </div>
-                    ))}
+                  <div className="priority-column">
+                    <h3 className="priority-title high">High Priority</h3>
+                    {filteredTasks
+                      .filter((t) => t.priority === "high")
+                      .map((task) => (
+                        <div key={task.id} className="priority-task-card">
+                          {renderTaskRow(task)}
+                        </div>
+                      ))}
+                  </div>
                 </div>
-              </div>
-            </section>
-          </div>
+              </section>
+            </div>
+          )}
 
-          {/* RIGHT COLUMN: widgets (upcoming, notes, calendar) */}
+          {/* RIGHT COLUMN */}
           <div className="col-right">
-            {/* Upcoming tasks widget */}
             <section className="dashboard-widget">
               <h3 className="dashboard-widget-title">Upcoming (next 2 days)</h3>
               {upcomingTasks.length === 0 ? (
@@ -836,7 +804,6 @@ export default function Dashboard() {
               )}
             </section>
 
-            {/* Notes widget */}
             <section className="dashboard-widget">
               <h3 className="dashboard-widget-title">Notes</h3>
               <textarea
@@ -847,7 +814,6 @@ export default function Dashboard() {
               />
             </section>
 
-            {/* Calendar widget */}
             <section className="dashboard-widget">
               <h3 className="dashboard-widget-title">Task Calendar</h3>
 
