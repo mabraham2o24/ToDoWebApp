@@ -1296,3 +1296,86 @@ body.dark-mode .calendar-task-list {
     grid-template-columns: 1fr;
   }
 }
+
+/* =========================================================
+   DARK MODE: Calendar match middle-column styling
+========================================================= */
+
+/* Calendar container card already matches, just refine the internals */
+body.dark-mode .calendar-day-label {
+  color: #9ca3af; /* same muted text tone used elsewhere */
+}
+
+/* Base day cell: match task cards */
+body.dark-mode .calendar-day {
+  background: #020617;              /* same as priority-task-card */
+  border: 1px solid #111827;        /* same border tone */
+  color: #e5e7eb;                   /* readable text */
+}
+
+body.dark-mode .calendar-day:hover {
+  background: #111827;              /* same hover vibe */
+  border-color: #1f2937;
+}
+
+/* Selected day: match your selected highlight style */
+body.dark-mode .calendar-day.selected {
+  background: #e5e7eb;
+  border-color: #e5e7eb;
+  color: #020617;
+  font-weight: 700;
+}
+
+/* Days with tasks: subtle “glow” like the middle column (no harsh orange) */
+body.dark-mode .calendar-day.has-task {
+  background: #0b1220;              /* slightly lifted from #020617 */
+  border-color: #1f2937;
+  color: #e5e7eb;
+  font-weight: 600;
+}
+
+/* If it has tasks AND is selected, selected wins */
+body.dark-mode .calendar-day.has-task.selected {
+  background: #e5e7eb;
+  border-color: #e5e7eb;
+  color: #020617;
+}
+
+/* Nav buttons match theme */
+body.dark-mode .calendar-nav-btn {
+  background: #111827;
+  color: #e5e7eb;
+  border: 1px solid #1f2937;
+}
+
+body.dark-mode .calendar-nav-btn:hover {
+  background: #1f2937;
+}
+
+/* Divider line in calendar */
+body.dark-mode .calendar-task-list {
+  border-top-color: #111827;
+}
+
+/* Calendar task list text */
+body.dark-mode .calendar-task-text {
+  color: #e5e7eb;
+}
+
+/* Tags inside calendar: match your priority pill dark styles */
+body.dark-mode .calendar-low {
+  background: #064e3b;
+  color: #bbf7d0;
+}
+
+body.dark-mode .calendar-medium {
+  background: #3b2400;
+  color: #facc15;
+  border: 1px solid #4a2e00;
+  font-weight: 700;
+}
+
+body.dark-mode .calendar-high {
+  background: #7f1d1d;
+  color: #fecaca;
+}
