@@ -832,37 +832,89 @@ export default function Dashboard() {
       {calendarModal}
 
       <header className="topbar">
-        <div className="topbar-section topbar-left">
-          {user && <span className="topbar-username">{user.name}</span>}
+        {/* LEFT: personalized greeting */}
+        <div className="topbar-greeting">
+          <div className="greeting-icon" aria-hidden="true">
+            👋
+          </div>
+
+          <div className="greeting-copy">
+            <p className="greeting-eyebrow">Welcome back</p>
+
+            <h2 className="greeting-title">
+              Good{" "}
+              {new Date().getHours() < 12
+                ? "morning"
+                : new Date().getHours() < 17
+                ? "afternoon"
+                : "evening"}
+              {user?.name ? `, ${user.name.split(" ")[0]}` : ""}
+            </h2>
+
+            <p className="greeting-subtitle">
+              Let&apos;s organize your day and make progress.
+            </p>
+          </div>
         </div>
 
-        <div className="topbar-section topbar-center">
-          <h1 className="app-title">
-            What To-Do{" "}
-            <span role="img" aria-label="planner">
-              📅
-            </span>
-          </h1>
+        {/* CENTER: app branding */}
+        <div className="topbar-brand">
+          <div className="brand-icon" aria-hidden="true">
+            ✓
+          </div>
+
+          <div className="brand-copy">
+            <span className="brand-name">What To-Do</span>
+            <span className="brand-tagline">Personal productivity</span>
+          </div>
         </div>
 
-        <div className="topbar-section topbar-right">
+        {/* RIGHT: navigation actions */}
+        <div className="topbar-actions">
           <button
-            className="theme-toggle-btn"
+            type="button"
+            className="header-action-btn"
             onClick={() => setIsCalendarOpen(true)}
             title="Open Calendar View"
           >
-            📅 Calendar
+            <span className="header-action-icon" aria-hidden="true">
+              📅
+            </span>
+            <span>Calendar</span>
           </button>
 
           <button
-            className="theme-toggle-btn"
+            type="button"
+            className="header-action-btn"
             onClick={() => setIsDark((prev) => !prev)}
+            title={isDark ? "Switch to light mode" : "Switch to dark mode"}
           >
-            {isDark ? "☀️ Light" : "🌙 Dark"}
+            <span className="header-action-icon" aria-hidden="true">
+              {isDark ? "☀️" : "🌙"}
+            </span>
+            <span>{isDark ? "Light" : "Dark"}</span>
           </button>
 
-          <button className="logout-btn" onClick={handleLogout}>
-            Log out
+          <button
+            type="button"
+            className="header-profile-btn"
+            onClick={handleLogout}
+            title="Log out"
+          >
+            <span className="header-avatar" aria-hidden="true">
+              {user?.name?.charAt(0)?.toUpperCase() || "U"}
+            </span>
+
+            <span className="header-profile-copy">
+              <span className="header-profile-name">
+                {user?.name?.split(" ")[0] || "User"}
+              </span>
+              <span className="header-profile-action">Log out</span>
+            </span>
+
+            <span className="logout-arrow" aria-hidden="true">
+              →
+            </span>
           </button>
         </div>
       </header>
